@@ -4,6 +4,7 @@ from block import Block
 from ledger import Ledger
 from transaction import Transaction
 from account import Account
+from consensus import consensus
 
 
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
@@ -48,10 +49,7 @@ class Blockchain:
                     transaction.sender_address
                 )
 
-        target = '0' * self.difficulty
-        while not block.hash.startswith(target):
-            block.nonce += 1
-            block.hash = block.calculate_hash()
+        block = consensus.pow(block, self.difficulty)
 
         self.chain.append(block)
 
