@@ -5,6 +5,7 @@ from ledger import Ledger
 from transaction import Transaction
 from account import Account
 from consensus import consensus
+from network import network
 
 
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
@@ -16,6 +17,7 @@ class Blockchain:
         self.transactions: list[Transaction] = []
         self.ledger = Ledger()
         self.difficulty = 4  # The number of leading zeroes in the hash
+        self.network = network.Network()
 
     def create_genesis_block(self):
         return Block(0, bytearray(32).hex())
@@ -52,6 +54,7 @@ class Blockchain:
         block = consensus.pow(block, self.difficulty)
 
         self.chain.append(block)
+        self.network.broadcast_block(block)
 
         logging.info(
             'block_number: %i, block_hash: %s, nonce: %i, transactions: %i, difficulty: %i',
@@ -98,5 +101,3 @@ if __name__ == "__main__":
     blockchain.add_transaction(tx3)
 
     blockchain.mine()
-
-    print(blockchain.ledger.balances)

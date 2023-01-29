@@ -1,9 +1,33 @@
 import hashlib
+import json
 import time
 from transaction import Transaction
 
 
 class Block:
+
+    @property
+    def json(self):
+        def tx_to_str(tx: Transaction):
+            return {
+                "amount": str(tx.amount),
+                "block_number": tx.block_number,
+                "hash": str(tx.hash),
+                "public_key": tx.public_key.to_string().hex(),
+                "recipient_address": str(tx.recipient_address),
+                "sender_address": str(tx.sender_address),
+                "signature": tx.signature.hex()
+            }
+
+        return json.dumps({
+            "block_number": self.block_number,
+            "previous_hash": self.previous_hash,
+            "transactions": [tx_to_str(tx) for tx in self.transactions],
+            "timestamp": self.timestamp,
+            "nonce": self.nonce,
+            "hash": self.hash
+        }).encode()
+
     def __init__(self, block_number: int, previous_hash: str, transactions: list[Transaction] = []):
         self.block_number: int = block_number
         self.previous_hash: str = previous_hash
